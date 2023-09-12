@@ -1,5 +1,6 @@
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
+import 'package:listview_test/card_view.dart';
 
 void main() {
   runApp(const MyApp());
@@ -40,67 +41,27 @@ class _MyHomePageState extends State<MyHomePage> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
       ),
-      body: CardView(),
-    );
-  }
-}
-
-class CardView extends StatefulWidget {
-  const CardView({super.key});
-
-  @override
-  State<CardView> createState() => _CardViewState();
-}
-
-class _CardViewState extends State<CardView> {
-  int? selectedIndex;
-
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 400,
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Stack(
-        children: List.generate(
-          5,
-          (index) => AnimatedPositioned(
-            duration: const Duration(milliseconds: 300),
-            top: selectedIndex == index ? 0 : index * 60,
-            left: 0,
-            right: 0,
-            height: selectedIndex == index ? 290 : 50,
-            child: GestureDetector(
-              onTap: () {
-                setState(() {
-                  if (selectedIndex == null) {
-                    selectedIndex = index;
-                  } else {
-                    selectedIndex = null;
-                  }
-                });
-              },
-              child: AnimatedOpacity(
-                opacity: selectedIndex == null
-                    ? 1
-                    : selectedIndex == index
-                        ? 1
-                        : 0,
-                duration: const Duration(milliseconds: 300),
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    border: Border.all(),
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  child: Center(child: Text('$index')),
-                ),
-              ),
+      body: Container(
+        height: 500,
+        child: CardView(
+          space: 10,
+          children: [
+            Container(
+              color: Colors.red,
             ),
-          ),
+            Container(
+              color: Colors.blue,
+            ),
+            Container(
+              color: Colors.green,
+            ),
+            Container(
+              color: Colors.yellow,
+            ),
+            Container(
+              color: Colors.purple,
+            ),
+          ],
         ),
       ),
     );
