@@ -6,11 +6,17 @@ class CardView extends StatefulWidget {
   const CardView({
     super.key,
     required this.children,
-    this.space,
-  });
+    required this.expandedChildren,
+    this.space = 8,
+    this.padding = EdgeInsets.zero,
+    this.duration = const Duration(milliseconds: 300),
+  }) : assert(children.length == expandedChildren.length);
 
-  final double? space;
   final List<Widget> children;
+  final List<Widget> expandedChildren;
+  final double space;
+  final EdgeInsets padding;
+  final Duration duration;
 
   @override
   State<CardView> createState() => _CardViewState();
@@ -31,95 +37,94 @@ class _CardViewState extends State<CardView> {
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (context, constraints) {
-      final listComponentHeight = (constraints.maxHeight - (widget.space ?? 0) * (widget.children.length - 1)) / widget.children.length;
-
       return IndexedStack(
         index: cardViewType.index,
         children: [
-          SizedBox(
-            height: constraints.maxHeight,
-            child: Stack(
-              children: List.generate(
-                5,
-                (index) => AnimatedPositioned(
-                  duration: const Duration(milliseconds: 300),
-                  top: selectedIndex == index ? 0 : index * listComponentHeight + (widget.space ?? 0) * index,
-                  left: 0,
-                  right: 0,
-                  height: selectedIndex == index ? constraints.maxHeight : listComponentHeight,
-                  onEnd: () {
-                    setState(() {
-                      if (selectedIndex == index) {
-                        cardViewType = CardViewType.pageView;
-                      }
-                    });
-                  },
-                  child: GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        if (selectedIndex == null) {
-                          selectedIndex = index;
-                          pageController.jumpToPage(index);
-                        } else {
-                          selectedIndex = null;
-                        }
-                      });
-                    },
-                    child: AnimatedOpacity(
-                      opacity: selectedIndex == null
-                          ? 1
-                          : selectedIndex == index
-                              ? 1
-                              : 0,
-                      duration: const Duration(milliseconds: 300),
-                      child: DecoratedBox(
-                        decoration: BoxDecoration(
-                          border: Border.all(),
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        child: Center(child: Text('$index')),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
+          Padding(
+            padding: widget.padding,
+            child: _buildListArea(constraints),
           ),
-          SizedBox(
-            height: constraints.maxHeight,
-            child: PageView(
-              controller: pageController,
-              onPageChanged: (index) {
-                setState(() {
-                  selectedIndex = index;
-                });
-              },
-              children: [
-                ...List.generate(
-                  5,
-                  (index) => GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        cardViewType = CardViewType.list;
-                        selectedIndex = null;
-                      });
-                    },
-                    child: Container(
-                      decoration: BoxDecoration(
-                        border: Border.all(),
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                      child: Center(
-                        child: Text('$index'),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
+          _buildPageViewArea(constraints),
         ],
       );
     });
+  }
+
+  Widget _buildListArea(BoxConstraints constraints) {
+    final listComponentHeight = (constraints.maxHeight - widget.padding.vertical - (widget.space) * (widget.children.length - 1)) / widget.children.length;
+
+    return Stack(
+      children: List.generate(
+        widget.children.length,
+        (index) => AnimatedPositioned(
+          duration: widget.duration,
+          top: selectedIndex == index ? 0 : index * listComponentHeight + widget.space * index,
+          left: 0,
+          right: 0,
+          height: selectedIndex == index ? constraints.maxHeight - widget.padding.vertical : listComponentHeight,
+          onEnd: () {
+            setState(() {
+              if (selectedIndex == index) {
+                cardViewType = CardViewType.pageView;
+              }
+            });
+          },
+          child: AnimatedOpacity(
+            opacity: selectedIndex == null
+                ? 1
+                : selectedIndex == index
+                    ? 1
+                    : 0,
+            duration: widget.duration,
+            child: GestureDetector(
+              onTap: () {
+                setState(() {
+                  if (selectedIndex == null) {
+                    selectedIndex = index;
+                    pageController.jumpToPage(index);
+                  } else {
+                    selectedIndex = null;
+                  }
+                });
+              },
+              child: Stack(
+                children: [
+                  AnimatedOpacity(opacity: selectedIndex == null ? 1 : 0, duration: widget.duration, child: widget.children[index]),
+                  AnimatedOpacity(opacity: selectedIndex == null ? 0 : 1, duration: widget.duration, child: widget.expandedChildren[index]),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPageViewArea(BoxConstraints constraints) {
+    return PageView(
+      controller: pageController,
+      onPageChanged: (index) {
+        setState(() {
+          selectedIndex = index;
+        });
+      },
+      children: [
+        ...List.generate(
+          widget.expandedChildren.length,
+          (index) => GestureDetector(
+            onTap: () {
+              setState(() {
+                cardViewType = CardViewType.list;
+                selectedIndex = null;
+              });
+            },
+            child: Padding(
+              padding: widget.padding,
+              child: widget.expandedChildren[index],
+            ),
+          ),
+        ),
+      ],
+    );
   }
 }

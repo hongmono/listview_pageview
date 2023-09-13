@@ -40,28 +40,93 @@ class _MyHomePageState extends State<MyHomePage> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
       ),
-      body: Container(
-        height: 500,
-        child: CardView(
-          space: 10,
-          children: [
-            Container(
-              color: Colors.red,
+      body: ListView(
+        children: [
+          SizedBox(
+            height: 500,
+            child: CardView(
+              space: 8,
+              padding: const EdgeInsets.all(16),
+              expandedChildren: [
+                Container(
+                  color: Colors.red,
+                  child: const Center(
+                    child: Text('Expanded 1'),
+                  ),
+                ),
+                Container(
+                  color: Colors.blue,
+                  child: const Center(
+                    child: Text('Expanded 2'),
+                  ),
+                ),
+                Container(
+                  color: Colors.green,
+                  child: const Center(
+                    child: Text('Expanded 3'),
+                  ),
+                ),
+                Container(
+                  color: Colors.yellow,
+                  child: const Center(
+                    child: Text('Expanded 4'),
+                  ),
+                ),
+                Column(
+                  children: [
+                    Expanded(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(24),
+                          color: Colors.grey,
+                        ),
+                        child: const Center(
+                          child: Text('Expanded 6'),
+                        ),
+                      ),
+                    ),
+                    TextButton(onPressed: () {}, child: const Text('asdf')),
+                  ],
+                ),
+              ],
+              children: [
+                Container(
+                  color: Colors.red,
+                  child: const Center(
+                    child: Text('List 1'),
+                  ),
+                ),
+                Container(
+                  color: Colors.blue,
+                  child: const Center(
+                    child: Text('List 2'),
+                  ),
+                ),
+                Container(
+                  color: Colors.green,
+                  child: const Center(
+                    child: Text('List 3'),
+                  ),
+                ),
+                Container(
+                  color: Colors.purple,
+                  child: const Center(
+                    child: Text('List 5'),
+                  ),
+                ),
+                Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(24),
+                    color: Colors.grey,
+                  ),
+                  child: const Center(
+                    child: Text('List 6'),
+                  ),
+                ),
+              ],
             ),
-            Container(
-              color: Colors.blue,
-            ),
-            Container(
-              color: Colors.green,
-            ),
-            Container(
-              color: Colors.yellow,
-            ),
-            Container(
-              color: Colors.purple,
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
